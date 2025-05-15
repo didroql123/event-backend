@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
+import { EventModule } from './event/event.module';
+import { AuthModule } from './auth/auth.module';
+import { RewardModule } from './reward/reward.module';
+import { UserParticipationModule } from './user-participation/user-participation.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    EventModule,
+    AuthModule,
+    RewardModule,
+    UserParticipationModule,
+  ],
 })
 export class AppModule {}

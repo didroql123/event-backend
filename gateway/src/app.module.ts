@@ -5,6 +5,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
 import { AppController } from './app.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthProxyController } from './auth/auth-proxy.controller';
+import { EventProxyController } from './event-proxy.controller';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
@@ -23,7 +24,7 @@ import { HttpModule } from '@nestjs/axios';
     }),
     HttpModule,
   ],
-  controllers: [AppController, AuthProxyController],
+  controllers: [AppController, AuthProxyController,EventProxyController],
   providers: [JwtStrategy],
 })
 export class AppModule {}
