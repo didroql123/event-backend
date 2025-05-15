@@ -13,9 +13,9 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(email: string, password: string, name: string): Promise<User> {
+  async create(email: string, password: string, role: string): Promise<User> {
     const hashed = await bcrypt.hash(password, 10);
-    const newUser = new this.userModel({ email, password: hashed, name });
+    const newUser = new this.userModel({ email, password: hashed, role });
     return newUser.save();
   }
 
@@ -36,7 +36,7 @@ export class UserService {
     const user = await this.validateUser(email, password);
     if (!user) throw new UnauthorizedException('이메일 또는 비밀번호가 틀렸습니다');
 
-    const payload = { sub: user._id, email: user.email };
+    const payload = { sub: user._id, email: user.email, role: user.role};
     const token = this.jwtService.sign(payload);
 
     return {

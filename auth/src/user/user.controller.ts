@@ -9,9 +9,10 @@ export class UserController {
   async register(
     @Body('email') email: string,
     @Body('password') password: string,
-    @Body('name') name: string,
+    @Body('role') role: string,
   ) {
-    const user = await this.userService.create(email, password, name);
+    if(role == null ) role = 'user';
+    const user = await this.userService.create(email, password, role);
     return { message: '유저 등록 성공', user };
   }
 

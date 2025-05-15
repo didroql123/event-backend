@@ -1,20 +1,27 @@
 services:
   mongo:
     image: mongodb/mongodb-community-server:latest
-    container_name: mongo
+    container_name: docker-mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-
+  auth:
+    build: ./auth
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./auth/.env
+    depends_on:
+      - mongo
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./gateway/.env
+    depends_on:
+      - auth
 volumes:
   mongo-data:
 
-auth:
-  build: ./auth
-  ports:
-    - "3001:3001"
-  env_file:
-    - ./auth/.env
-  depends_on:
-    - mongo
