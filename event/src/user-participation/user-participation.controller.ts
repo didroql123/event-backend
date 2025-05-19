@@ -8,6 +8,7 @@ import {
   Request,
   UseGuards,
   Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserParticipationService } from './user-participation.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -18,47 +19,69 @@ import { Roles } from '../auth/roles.decorator';
 export class UserParticipationController {
   constructor(private readonly userService: UserParticipationService) {}
 
-  // 🟢 유저가 이벤트 참여
+  // ✅ [user] 이벤트 참여
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user')
+  @Roles('user', 'admin')
   @Post('participate')
-  participate(@Request() req, @Body() body: any) {
-    return this.userService.participate(req.user.email, {
-      ...body,
-      date: new Date(),
-      status: false,
-    });
+  participate(
+    @Request() req,
+    @Body('event_id', ParseIntPipe) event_id: number,
+  ) {
+    return this.userService.participate(req.user.email, event_id);
   }
 
-  // 🟢 자신의 참여 정보 조회
+  // ✅ [user] 내 참여 기록 조회
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user')
+  @Roles('user', 'admin')
   @Get('me')
-  getMy(@Request() req) {
+  getMyParticipation(@Request() req) {
     return this.userService.getMyParticipation(req.user.email);
   }
 
-  // 🟡 자신의 참여 기록 수정 (parti_id 전체 수정)
+  // ✅ [admin, auditor, operator] 전체 유저 참여 내역 조회
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user')
-  @Patch('me')
-  updateMy(@Request() req, @Body() body: { parti_id: any[] }) {
-    return this.userService.updateMyParticipation(req.user.email, body.parti_id);
-  }
-
-  // 🔴 관리자 전체 조회
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'auditor')
+  @Roles('admin', 'auditor', 'operator')
   @Get()
   getAll() {
-    return this.userService.getAll();
+    return this.userService.getAllParticipation();
   }
 
-  // 🔴 관리자 삭제
+  // ✅ [user] 미션 완료 처리
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('user', 'admin')
+  @Patch('complete/:event_id')
+  complete(
+    @Request() req,
+    @Param('event_id', ParseIntPipe) event_id: number,
+  ) {
+    return this.userService.completeMission(req.user.email, event_id);
+  }
+
+  // ✅ [admin] 특정 유저 참여 정보 삭제
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  @Delete(':email')
-  delete(@Param('email') email: string) {
-    return this.userService.delete(email);
+  @Delete(':email/:event_id')
+  deleteParticipation(
+    @Param('email') email: string,
+    @Param('event_id', ParseIntPipe) eventId: number,
+  ) {
+    return this.userService.deleteParticipation(email, eventId);
   }
+
+  // ✅ [admin, auditor] 특정 이벤트 참여자만 조회
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'auditor', 'operator')
+  @Get('event/:event_id')
+  getByEventId(@Param('event_id', ParseIntPipe) event_id: number) {
+    return this.userService.getByEventId(event_id);
+  }
+
+  // ✅ [admin, auditor] 보상 상태별 참여자 조회
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'auditor', 'operator')
+  @Get('status/:status')
+  getByRewardStatus(@Param('status') status: 'true' | 'false') {
+    return this.userService.getByStatus(status === 'true');
+  }
+
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { EventService } from './event.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -16,21 +16,29 @@ export class EventController {
   }
 
   @Get()
-  findAll() {
-    return this.eventService.findAll();
+  findFiltered(@Query('valid') valid: 'true' | 'false' | 'all') {
+    return this.eventService.findFiltered(valid);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.eventService.findOne(Number(id));
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('operator', 'admin')
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.eventService.update(id, body);
+  @Patch(':event_id')
+  update(@Param('event_id') event_id: number, @Body() body: any) {
+    return this.eventService.update(event_id, body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('operator', 'admin')
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.eventService.delete(id);
+  @Delete(':event_id')
+  delete(@Param('event_id') event_id: number) {
+    return this.eventService.delete(event_id);
   }
+
+  
+
 }

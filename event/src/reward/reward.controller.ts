@@ -15,6 +15,8 @@ export class RewardController {
     return this.rewardService.create(body);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('operator', 'admin')
   @Get()
   findAll() {
     return this.rewardService.findAll();
@@ -22,22 +24,15 @@ export class RewardController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('operator', 'admin')
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() body: any) {
-    return this.rewardService.update(id, body);
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user', 'operator', 'admin')
-  @Patch(':id/quantity')
-  updateQuantity(@Param('id') id: string, @Body('quantity') quantity: number) {
-    return this.rewardService.updateQuantity(id, quantity);
+  @Patch(':reward_id')
+  update(@Param('reward_id') reward_id: number, @Body() body: any) {
+    return this.rewardService.update(reward_id, body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('operator', 'admin')
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.rewardService.delete(id);
+  @Delete(':reward_id')
+  delete(@Param('reward_id') reward_id: number) {
+    return this.rewardService.delete(reward_id);
   }
 }

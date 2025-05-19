@@ -1,9 +1,9 @@
 services:
   mongo:
-    image: mongodb/mongodb-community-server:latest
+    image: mongo:6.0.12
     container_name: docker-mongo
-    ports:
-      - "27017:27017"
+    #ports:
+    #  - "27017:27017"
     volumes:
       - mongo-data:/data/db
   auth:

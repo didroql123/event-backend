@@ -5,7 +5,7 @@ export type EventDocument = Event & Document;
 
 @Schema()
 export class Event {
-  @Prop({ required: true })
+  @Prop({ unique: true, auto: true })
   event_id: number;
 
   @Prop()
@@ -19,10 +19,11 @@ export class Event {
 
   @Prop({
     type: {
-      create_date: Date,
+      create_date: { type: Date, default: () => new Date() },
       start_date: Date,
       end_date: Date,
     },
+    required: true,
   })
   date: {
     create_date: Date;
@@ -35,6 +36,10 @@ export class Event {
 
   @Prop({ default: true })
   valid: boolean;
+
+  @Prop({ enum: ['expired', 'sold_out', 'manual'], required: false })
+  close_reason?: 'expired' | 'sold_out' | 'manual';
+
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

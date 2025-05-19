@@ -12,7 +12,7 @@ export class UserEvent {
     type: [
       {
         event_id: Number,
-        condition: String,
+        condition: Number,
         date: Date,
         status: Boolean,
       },
@@ -21,7 +21,7 @@ export class UserEvent {
   })
   parti_id: {
     event_id: number;
-    condition: string;
+    condition: Number;
     date: Date;
     status: boolean;
   }[];

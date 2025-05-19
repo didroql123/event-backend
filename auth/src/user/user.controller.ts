@@ -11,7 +11,8 @@ export class UserController {
     @Body('password') password: string,
     @Body('role') role: string,
   ) {
-    if(role == null ) role = 'user';
+    if (!['admin', 'operator', 'auditor', 'user'].includes(role)) role = 'user';
+    
     const user = await this.userService.create(email, password, role);
     return { message: '유저 등록 성공', user };
   }

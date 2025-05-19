@@ -4,7 +4,7 @@ import { User, UserDocument } from './user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
+import { ConflictException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
@@ -14,6 +14,10 @@ export class UserService {
   ) {}
 
   async create(email: string, password: string, role: string): Promise<User> {
+    const existing = await this.userModel.findOne({ email });
+    if (existing) {
+      throw new ConflictException('이미 존재하는 이메일입니다.');
+    }
     const hashed = await bcrypt.hash(password, 10);
     const newUser = new this.userModel({ email, password: hashed, role });
     return newUser.save();
